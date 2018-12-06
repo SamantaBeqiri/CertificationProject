@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<ui:include name="header" src="/components/header.xhtml" />
+<f:metadata>
+	<f:viewParam name="id" value="#{employeeManagementBean.employee.id}" />
+	<f:viewAction action="#{employeeManagementBean.loadUser()}" />
+</f:metadata>
+
+<h:body>
+	<p:growl id="growl" life="7000" />
+
+	<ui:include name="header" src="/components/leftPanel.xhtml" />
+
+	<div id="right-panel" class="right-panel">
+
+		<ui:include name="header" src="/components/rightPanel.xhtml" />
+
+		<!-- content-->
+
+		<div class="content mt-3">
+
+			<!-- forma-->
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8 ">
+				<h:form id="editForm">
+					<div class="card">
+						<div class="card-header">
+							<strong>Edit Employee</strong>
+						</div>
+						<div class="card-body card-block">
+							<ui:include name="form" src="employeeForm.xhtml" />
+						</div>
+						<div class="card-footer">
+							<div class="offset-md-3 col-md-8">
+								<p:commandButton update=":editForm growl" style="width:300px;color:blue"
+									action="#{employeeManagementBean.editEmployee()}"
+									value="Edit Employee" />
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+
+	<div class="row form-group">
+
+		<div class="col col-md-3">
+			<label for="firstname" class=" form-control-label">FirstName</label>
+		</div>
+		<div class="col-12 col-md-9">
+			<h:inputText id="firstname" class="form-control"
+				value="#{employeeManagementBean.employee.firstname}"
+				pt:placeholder="Samanta" required="true"
+				requiredMessage="Emri eshte required!"
+				validatorMessage="Name must have only characters!">
+				<f:validateRegex pattern="[a-zA-Z]+" />
+			</h:inputText>
+		</div>
+
+	</div>
+
+	<div class="row form-group">
+
+		<div class="col col-md-3">
+			<label for="lastname" class="form-control-label">LastName</label>
+		</div>
+		<div class="col-12 col-md-9">
+			<h:inputText id="lastname"
+				value="#{employeeManagementBean.employee.lastname}"
+				class="form-control" pt:placeholder="Beqiri" required="true"
+				requiredMessage="Mbiemri eshte required!"
+				validatorMessage="Last name mast have only characters!">
+				<f:validateRegex pattern="[a-zA-Z]+" />
+			</h:inputText>
+		</div>
+	</div>
+
+	<div class="row form-group">
+		<div class="col col-md-3">
+			<label for="birthday" class="form-control-label">Birthday</label>
+		</div>
+		<div class="col-12 col-md-9">
+			<div class="input-group">
+				<div class="input-group-addon" id="showDate">
+					<i class="fa fa-calendar"></i>
+				</div>
+				<p:calendar id="birthday"
+					value="#{employeeManagementBean.employee.birthday}"
+					pattern="yyyy-MM-dd" yearRange="1953:2001" navigator="true"
+					required="true"
+					requiredMessage="Choose the birth date!" />
+			</div>
+		</div>
+	</div>
+
+	<div class="row form-group">
+
+		<div class="col col-md-3">
+			<label for="idCard" class="form-control-label">Id Card</label>
+		</div>
+		<div class="col-12 col-md-9">
+			<h:inputText id="idCard"
+				value="#{employeeManagementBean.employee.idCard}"
+				class="form-control" pt:placeholder="J1263813Q" required="true"
+				requiredMessage="Id Card is required">
+			</h:inputText>
+		</div>
+	</div>
+
+	<div class="row form-group">
+
+		<div class="col col-md-3">
+			<label for="email" class="form-control-label">Email</label>
+		</div>
+		<div class="col-12 col-md-9">
+			<h:inputText id="email"
+				value="#{employeeManagementBean.employee.email}"
+				class="form-control" pt:placeholder="name@gmail.com" required="true"
+				requiredMessage="Email is required"
+				validatorMessage="Email isn't in right format">
+				<f:validateRegex pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
+			</h:inputText>
+		</div>
+	</div>
+</h:body>
+</html>

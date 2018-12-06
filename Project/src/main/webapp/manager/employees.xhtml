@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<ui:include name="header" src="/components/header.xhtml" />
+
+<h:body class="nav-md">
+
+	<p:growl id="growl" life="4000" />
+	<ui:include name="header" src="/components/leftPanel.xhtml" />
+
+	<div id="right-panel" class="right-panel">
+
+		<ui:include name="header" src="/components/rightPanel.xhtml" />
+
+		<div class="content mt-3">
+
+			<!-- tabela-->
+			<h:form id="employeesForm">
+				<p:dataTable id="employeesTable" var="employee"
+					style=" text-align: center;"
+					value="#{employeeManagementBean.employeesOfManager}"
+					widgetVar="DTWVar"
+					styleClass="table table-striped table-bordered dataTable no-footer"
+					rows="5" paginator="true"
+					paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15" rowIndexVar="index"
+					rowKey="#{employee.id}"
+					selection="#{employeeManagementBean.selectedEmployees}">
+					<p:ajax event="rowDblselect"
+						listener="#{employeeManagementBean.onDoubleClick}"
+						update="employeeDialog" oncomplete="PF('editDialog').show()" />
+					<f:facet name="header">
+						<div class="content mt-3">
+							<div class="form-inline">
+								<div class="form-group">
+									<div class="input form-group">
+										<h:inputText id="search"
+											value="#{employeeManagementBean.inputSearch}"
+											pt:placeholder="Search..."
+											onkeyup="if(event.keyCode==13)this.blur();"
+											onchange="document.getElementById('searchButton').click();">
+										</h:inputText>
+										<h:commandButton id="searchButton" value="search"
+											actionListener="#{employeeManagementBean.getEmployees()}" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-12 " />
+
+						<p:commandButton title="Delete employees" id="delete"
+							value="Employee" style="float:right" icon="ui-icon-trash"
+							actionListener="#{employeeManagementBean.deleteSelectedEmployees()}"
+							update=":employeesForm:employeesTable growl">
+							<p:confirm header="Confirm" message="Delete selected employees ?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+
+							<p:commandButton value="Yes" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<p:commandButton title="
+										Add employee" id="addEmployee"
+							action="addEmployee?faces-redirect=true" value="Employee"
+							style="float:right" icon="ui-icon-plus" />
+
+						<p:commandButton
+							title="Assign certification to selected employees"
+							id="certificate" value="Certifications" style="float:right"
+							proces="@this" icon="ui-icon-plus" update="certificationDialog"
+							actionListener="#{employeesCertificationBean.setMultipleAdd(true)}"
+							oncomplete="PF('addDialog').show()" />
+
+					</f:facet>
+
+
+					<p:column selectionMode="multiple"
+						style="width:20px;text-align:center;" />
+
+					<p:column style="width:30px" headerText="#">
+						<h:outputText value="#{index + 1}" />
+					</p:column>
+
+					<p:column headerText="FirstName">
+						<h:outputText value="#{employee.firstname}" />
+					</p:column>
+
+					<p:column headerText="LastName">
+						<h:outputText value="#{employee.lastname}" />
+					</p:column>
+
+					<p:column headerText="Email">
+						<h:outputText value="#{employee.email}" />
+					</p:column>
+					<p:column headerText="Birthday">
+						<h:outputText value="#{employee.birthday}">
+							<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Id Card">
+						<h:outputText value="#{employee.idCard}" />
+					</p:column>
+
+					<p:column headerText="Actions" width="70px">
+
+
+
+						<p:commandButton title="Assign certification to this employee"
+							proces="@this" icon="fa fa-plus"
+							actionListener="#{employeesCertificationBean.setMultipleAdd(false)}"
+							update="certificationDialog" oncomplete="PF('addDialog').show()">
+							<f:setPropertyActionListener
+								target="#{employeesCertificationBean.addEmployeeCertification.employeeId}"
+								value="#{employee.id}" />
+						</p:commandButton>
+
+
+						<p:commandButton title="Edit this employee" proces="@this"
+							icon="fa fa-edit"
+							action="editEmployeePage?faces-redirect=true&amp;includeViewParams=true">
+							<f:setPropertyActionListener
+								target="#{employeeManagementBean.employee.id}"
+								value="#{employee.id}" />
+						</p:commandButton>
+
+						<p:commandButton icon="fa fa-trash" title="Delete this employee"
+							update="employeesTable growl"
+							actionListener="#{employeeManagementBean.deleteEmployee(employee.id)}">
+							<p:confirm header="Confirm"
+								message="Delete employee #{employee.firstname} #{employee.lastname} ?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+
+							<p:commandButton value="Yes" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</div>
+
+	<!-- .content -->
+
+	<!-- dialogForAddCertification -->
+	<p:dialog id="certificationDialog" widgetVar="addDialog"
+		resizable="false" modal="true" dynamic="true" width="500"
+		header="Add Certification">
+		<p:ajax event="close" update=":employeesForm:employeesTable" />
+		<ui:include src="addEmployeesCertification.xhtml" />
+	</p:dialog>
+	<!-- .dialogForAddCertification -->
+
+
+	<!-- dialogForEditEmployee -->
+	<p:dialog id="employeeDialog" widgetVar="editDialog" resizable="false"
+		modal="true" width="500" dynamic="true" header="Edit Employee">
+		<p:ajax event="close" update=":employeesForm:employeesTable" />
+		<ui:include src="editEmployee.xhtml" />
+	</p:dialog>
+	<!-- .dialogForEditEmployee -->
+
+	<!-- /footer content -->
+	<ui:include name="footer" src="/components/footer.xhtml" />
+</h:body>
+</html>

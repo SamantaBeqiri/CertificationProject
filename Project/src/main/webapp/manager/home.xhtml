@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<ui:include name="header" src="/components/header.xhtml" />
+
+
+<h:body>
+	<p:growl id="growl" life="4000" />
+	<ui:include name="header" src="/manager/managerSidebar.xhtml" />
+
+
+	<div id="right-panel" class="right-panel">
+
+		<ui:include name="header" src="/components/rightPanel.xhtml" />
+
+
+
+		<!-- content-->
+		<div class="content mt-3">
+
+			<!-- forma-->
+
+			<!-- tabela-->
+
+
+			<h:form id="employeesCertificationForm">
+				<p:dataTable id="employeesCertificationTable"
+					var="employeesCertification"
+					styleClass="table table-striped table-bordered dataTable no-footer"
+					rowStyleClass="#{employeesCertification.status}"
+					value="#{employeesCertificationBean.employeesCertification}"
+					style="text-align:center" widgetVar="DTWVar" rows="5"
+					paginator="true"
+					paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15" rowIndexVar="rowIndex"
+					rowKey="#{employeesCertification.id}"
+					selection="#{employeesCertificationBean.employeesCertificationSelected}">
+
+					<f:facet name="header">
+						<div class="form-group">
+							<div class="input form-group">
+								<h:inputText id="description"
+									value="#{employeesCertificationBean.searchDto.description}"
+									pt:placeHolder="Search..." />
+								<h:selectOneMenu id="employee" name="employee"
+									style="width:180px"
+									value="#{employeesCertificationBean.searchDto.employeeName}">
+									<f:selectItem itemLabel="Employee" itemValue="#{null}"
+										noSelectionOption="true" />
+									<f:selectItems
+										value="#{employeeManagementBean.employeesOfManager}"
+										var="employee" itemValue="#{employee.firstname}"
+										itemLabel="#{employee.firstname}" />
+								</h:selectOneMenu>
+								<h:selectOneMenu id="status" name="status" style="width:180px"
+									value="#{employeesCertificationBean.searchDto.status}">
+									<f:selectItem itemLabel="Status" itemValue="#{null}"
+										noSelectionOption="true" />
+									<f:selectItems value="#{employeesCertificationBean.statusDto}"
+										var="stat" itemValue="#{stat.status}"
+										itemLabel="#{stat.status}" />
+								</h:selectOneMenu>
+								<p:commandButton title="Search" id="btnSearch"
+									icon="fa fa-search"
+									actionListener="#{employeesCertificationBean.search()}"
+									update=":employeesCertificationForm:employeesCertificationTable" />
+							</div>
+						</div>
+
+						<p:commandButton title="Delete certificates of employees"
+							id="deleteCertificate" style="float:right" icon="fa fa-trash"
+							actionListener="#{employeesCertificationBean.deleteListCertifications()}"
+							update=":employeesCertificationForm:employeesCertificationTable growl">
+
+							<p:confirm header="Confirm" message="Are you sure ?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+
+							<p:commandButton value="Yes" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<p:commandButton title="Add certification for this employee"
+							proces="@this" icon="fa fa-plus" update="certificationDialog"
+							oncomplete="PF('addDialog').show()" style="float:right">
+						</p:commandButton>
+
+					</f:facet>
+
+					<p:column style="width:30px" headerText="#">
+						<h:outputText value="#{rowIndex + 1}" />
+					</p:column>
+
+					<p:column selectionMode="multiple"
+						style="width:20px;text-align:center" />
+
+					<p:column headerText="Employee">
+						<h:outputText value="#{employeesCertification.firstname}" />
+					</p:column>
+					<p:column headerText="Certificate">
+						<h:outputText value="#{employeesCertification.certificatename}" />
+					</p:column>
+
+					<p:column headerText="Status">
+						<h:outputText value="#{employeesCertification.status}" />
+					</p:column>
+
+					<p:column headerText="Points">
+						<h:outputText value="#{employeesCertification.points}" />
+					</p:column>
+					<p:column headerText="Date">
+						<h:outputText value="#{employeesCertification.date}" />
+					</p:column>
+					<p:column headerText="Actions" style="width:70px">
+
+						<p:panelGrid>
+
+							<p:commandButton icon="ui-icon-trash"
+								title="Delete this certifacte"
+								actionListener="#{employeesCertificationBean.deleteCertification(employeesCertification.id)}"
+								update=":employeesCertificationForm:employeesCertificationTable growl">
+								<p:confirm header="Confirm" message="Are you sure ?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+
+								<p:commandButton value="Yes" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+						</p:panelGrid>
+
+					</p:column>
+
+
+				</p:dataTable>
+			</h:form>
+		</div>
+	</div>
+
+	<p:dialog id="certificationDialog" widgetVar="addDialog" height="240"
+		width="500" resizable="false" modal="true" dynamic="true"
+		header="Add Certification">
+		<p:ajax event="close"
+			update=":employeesCertificationForm:employeesCertificationTable" />
+		<ui:include src="addEmployeesCertificationDialog.xhtml" />
+	</p:dialog>
+	<ui:include name="footer" src="/components/footer.xhtml" />
+
+</h:body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<ui:include name="header" src="/components/header.xhtml" />
+
+<h:body class="nav-md">
+
+	<p:growl id="growl" life="6000" />
+
+	<ui:include name="header" src="/components/leftPanel.xhtml" />
+
+	<div id="right-panel" class="right-panel">
+
+		<ui:include name="header" src="/components/rightPanel.xhtml" />
+
+		<div class="col-lg-2" />
+		<div class="content mt-2">
+			<!-- tabela-->
+
+			<div class="col-lg-1 "></div>
+			<div class="col-lg-10 ">
+				<h:form id="certificatesForm">
+					<p:dataTable id="certificatesTable" var="certificate"
+						style="text-align:center" value="#{certificateBean.certificates}"
+						widgetVar="DTWVar"
+						styleClass="table table-striped table-bordered dataTable no-footer"
+						rows="5" paginator="true"
+						paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" rowIndexVar="index"
+						rowKey="#{certificate.id}"
+						selection="#{certificateBean.certificatesSelected}">
+
+						<f:facet name="header">
+							<div class="form-inline">
+								<div class="form-group">
+									<div class="input form-group">
+
+										<h:inputText id="search"
+											value="#{certificateBean.description}"
+											pt:placeholder="Search..."
+											onkeyup="if(event.keyCode==13)this.blur();"
+											onchange="document.getElementById('searchButton').click();">
+										</h:inputText>
+										<h:commandButton id="searchButton" value="search"
+											actionListener="#{certificateBean.getManagerCertificates()}" />
+									</div>
+								</div>
+							</div>
+
+							<p:commandButton title="Delete certificates" id="delete"
+								value="Certificate" style="float:right" icon="ui-icon-trash"
+								actionListener="#{certificateBean.deleteCertificatesSelected()}"
+								update=":certificatesForm:certificatesTable growl">
+								<p:confirm header="Confirm" message="Are you sure ?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+
+								<p:commandButton value="Yes" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+							<p:commandButton title="Add certificate" id="addCertificate"
+							
+								actionListener="#{certificateBean.refreshCertificate()}"
+								value="Certificate" style="float:right" icon="fa fa-plus"
+								oncomplete="PF('addDialog').show()">
+							</p:commandButton>
+
+
+						</f:facet>
+
+
+						<p:column selectionMode="multiple"
+							style="width:20px;text-align:center" />
+
+						<p:column style="width:30px" headerText="#">
+							<h:outputText value="#{index + 1}" />
+						</p:column>
+
+						<p:column headerText="Name">
+							<h:outputText value="#{certificate.name}" />
+						</p:column>
+
+						<p:column headerText="Type">
+							<h:outputText value="#{certificate.type}" />
+						</p:column>
+
+						<p:column headerText="Actions">
+
+							<p:panelGrid>
+
+								<p:commandButton title="Edit this certificate" proces="@this"
+									update="dialogEdit" icon="fa fa-edit"
+									oncomplete="PF('editDialog').show()">
+									<f:setPropertyActionListener
+										target="#{certificateBean.certificate}" value="#{certificate}" />
+								</p:commandButton>
+
+								<p:commandButton icon="fa fa-trash"
+									title="Delete this certificate"
+									update="growl certificatesTable"
+									actionListener="#{certificateBean.deleteCertificate(certificate.id)}">
+									<p:confirm header="Confirm"
+										message="Delete certificate #{certificate.name}?"
+										icon="ui-icon-alert" />
+								</p:commandButton>
+
+								<p:confirmDialog global="true" showEffect="fade"
+									hideEffect="fade" width="280">
+									<p:commandButton value="Yes" type="button"
+										styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+									<p:commandButton value="No" type="button"
+										styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+								</p:confirmDialog>
+							</p:panelGrid>
+
+						</p:column>
+
+					</p:dataTable>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+	<!-- .content -->
+
+	<!-- addDialog -->
+
+	<p:dialog id="dialogAdd" widgetVar="addDialog" resizable="false"
+		header="Add Certificate" modal="true" width="500" dynamic="true">
+		<p:ajax event="close" update=":certificatesForm:certificatesTable" />
+		<ui:include src="addCertificate.xhtml" />
+	</p:dialog>
+	<!-- .addDialog -->
+	<!-- editDialog -->
+
+	<p:dialog id="dialogEdit" widgetVar="editDialog" resizable="false"
+		header="Edit Certificate" modal="true" width="500" dynamic="true">
+		<p:ajax event="close" update=":certificatesForm:certificatesTable" />
+		<ui:include src="editCertificate.xhtml" />
+	</p:dialog>
+	<!-- .editDialog -->
+
+	<!-- /footer content -->
+
+	<ui:include name="footer" src="/components/footer.xhtml" />
+</h:body>
+</html>

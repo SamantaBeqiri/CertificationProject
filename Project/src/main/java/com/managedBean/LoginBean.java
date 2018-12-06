@@ -1,0 +1,95 @@
+package com.managedBean;
+
+import java.io.Serializable;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.RequestScoped;
+
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
+import com.dto.UserDto;
+import com.service.UserService;
+import com.utility.Messages;
+
+
+@ManagedBean(name = "loginBean")
+@RequestScoped
+public class LoginBean implements Serializable{
+	
+	
+	private String email;
+	private String password;
+
+	@ManagedProperty(value = "#{userService}")
+	private UserService userService;
+	@ManagedProperty(value = "#{userBean}")
+	private UserBean userBean;
+
+		public String logIn() {
+			StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+			System.out.println("para proveeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+			UserDto userDto = userService.getLoggedUser(email);
+			
+			if (userDto != null && passwordEncryptor.checkPassword(password, userDto.getPassword())) {
+				System.out.println("Jane njeojjjj"+userDto.getEmail()+userDto.getPassword());
+			
+				if(userBean!=null) {
+					System.out.println("Useri nuk eshte nullllllll");
+				userBean.setUser(userDto);
+				System.out.println(userBean.isManager()+"eshte managerrrrrrrr");
+				}
+				else {
+					System.out.println("UserBean eshte nulllllllll");
+				}
+				return "home.xhtml?faces-redirect=true";
+
+			} else {
+				Messages.addMessage(Messages.bundle.getString("INCORRECT_DATA"), "error");
+
+			}
+
+			return null;
+		}
+
+	public String logOut() {
+
+		userBean.logOut();
+		return "/login.xhtml?faces-redirect=true";
+	}
+
+	// GETTERS AND SETTERS
+	public String getEmail() {
+		return email;
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
+	public UserBean getUserBean() {
+		return userBean;
+	}
+
+	public void setUserBean(UserBean userBean) {
+		this.userBean = userBean;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+}
